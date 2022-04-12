@@ -12,7 +12,7 @@ public:
              const std::string& relations_fpath);
   IlliniBook(const IlliniBook& rhs) = delete;
   IlliniBook& operator=(const IlliniBook& rhs) = delete;
-  ~IlliniBook();
+  ~IlliniBook() = default;
   bool AreRelated(int uin_1, int uin_2) const;
   bool AreRelated(int uin_1, int uin_2, const std::string& relationship) const;
   int GetRelated(int uin_1, int uin_2) const;
@@ -25,9 +25,11 @@ public:
   // helper
   int Solve(const int& start, const int& dest);
   bool FindV(const std::vector<int>& vec, const int& value);
+  void DisplayGraph();
 
 private:
-  std::vector<std::map<int, std::string>> graph_;
+  std::map<int, std::map<int, std::string>> graph_;
+  // std::map<std::string, std::list<std::string>> adj_;
 };
 
 #endif
