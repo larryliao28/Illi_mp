@@ -3,6 +3,7 @@
 
 #include <list>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -23,13 +24,24 @@ public:
   size_t CountGroups(const std::vector<std::string>& relationships) const;
 
   // helper
-  int Solve(const int& start, const int& dest);
-  bool FindV(const std::vector<int>& vec, const int& value);
+  int Solve(const int& uin_1, const int& uin_2) const;
+  bool FindV(const std::vector<int>& vec, const int& value) const;
+
+  int SolveRelation(const int& uin_1,
+                    const int& uin_2,
+                    const std::string& relation) const;
+  bool FindVRelation(const std::vector<int>& vec,
+                     const int& value,
+                     const std::string& current_relation,
+                     const std::string& relation) const;
+
   void DisplayGraph();
+
+  void DFS(const int& node, std::set<int>& visited_node);
+  size_t CountGroupsHelp();
 
 private:
   std::map<int, std::map<int, std::string>> graph_;
-  // std::map<std::string, std::list<std::string>> adj_;
 };
 
 #endif
