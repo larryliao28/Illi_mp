@@ -7,97 +7,57 @@
 #include <queue>
 #include <set>
 
+// read the files
 IlliniBook::IlliniBook(const std::string& people_fpath,
                        const std::string& relations_fpath) {
-  // possible data structures: map<int, map<int, string>>
-
   std::vector<int> persons;
   std::map<int, std::string> relationships;
-  std::map<int, std::string> newRelation;
-  std::cout << "read the first file : " << std::endl;
+  std::map<int, std::string> new_relation;
   std::string line;
 
   std::ifstream fp(people_fpath);
-  // int line_num = 1;
   std::string line_str;
-  // int vertex_num = 1;
   while (getline(fp, line)) {
-    std::cout << "in first while loop\n";
-
     int vertex_num = atoi(line.c_str());
-    // cout << "string: " << line << "\n";
-    std::cout << "vertex number: " << vertex_num << "\n";
-
-    // initialize the book to be all empty relationships
-
     graph_.insert((
         std::pair<int, std::map<int, std::string>>(vertex_num, relationships)));
   }
 
-  //
-  // initialize the book to be a vector of empty relationship
-  //
-  //
-  //
-  std::cout << "vector size: " << persons.size() << "\n";
-
-  std::cout << "\nread the second file: \n\n";
-
   std::ifstream sec_file(relations_fpath);
-
-  // int line_num = 1;
-  // int first_vertex = 0;
-  // int second_vertex = 0;
   std::string relation;
   int n_pos = 0;
 
   while (getline(sec_file, line)) {
-    std::cout << "in second while loop\n";
     int first_vertex = atoi(line.c_str());
-    std::cout << "first vertex number: " << first_vertex << ",";
-
     n_pos = line.find(',');
     line.erase(0, n_pos + 1);
     int second_vertex = atoi(line.c_str());
-    std::cout << "second vertex number: " << second_vertex << ",";
-
     n_pos = line.find(',');
-
     line.erase(0, n_pos + 1);
-
     relation = line.c_str();
-    std::cout << "relation: " << relation << "\n";
-
     //
     // save the relationships
     //
 
-    newRelation.insert((std::pair<int, std::string>(second_vertex, relation)));
-
+    new_relation.insert((std::pair<int, std::string>(second_vertex, relation)));
     //
     // insert the relationship into the map
     //
-    std::map<int, std::string> aMap;
-    // int map_position = 0;
     std::map<int, std::map<int, std::string>>::iterator it;
     std::map<int, std::map<int, std::string>>::iterator it_end;
     it = graph_.begin();
     it_end = graph_.end();
     while (it != it_end) {
       if (it->first == first_vertex) {
-        std::cout << "key: " << it->first << "\n";
-        std::cout << "insert relationship: " << second_vertex << " " << relation
-                  << "\n";
         graph_[first_vertex].insert({second_vertex, relation});
-        // graph_[second_vertex].insert({first_vertex, second_vertex});
+        graph_[second_vertex].insert({first_vertex, relation});
       }
       it++;
-      // map_position++;
     }
-    // line_num++;
   }
 }
 
+// display the read in graph
 void IlliniBook::DisplayGraph() {
   for (auto const& kp : graph_) {
     std::cout << "netID: " << kp.first << std::endl;
@@ -108,6 +68,7 @@ void IlliniBook::DisplayGraph() {
   }
 }
 
+// helper for getRelated and are related, passing the test
 int IlliniBook::Solve(const int& uin_1, const int& uin_2) const {
   std::queue<int> queue;
   std::vector<int> visited_nodes;
@@ -138,6 +99,7 @@ int IlliniBook::Solve(const int& uin_1, const int& uin_2) const {
   return -1;
 }
 
+// helper for getRlated and are related with relationhips, does not work
 int IlliniBook::SolveRelation(const int& uin_1,
                               const int& uin_2,
                               const std::string& relation) const {
@@ -171,6 +133,7 @@ int IlliniBook::SolveRelation(const int& uin_1,
   return -1;
 }
 
+// helper for solve, works
 bool IlliniBook::FindV(const std::vector<int>& vec, const int& value) const {
   for (const int& ele : vec) {
     if (ele == value) {
@@ -180,6 +143,7 @@ bool IlliniBook::FindV(const std::vector<int>& vec, const int& value) const {
   return false;
 }
 
+// helper for solveRelation, does not work
 bool IlliniBook::FindVRelation(const std::vector<int>& vec,
                                const int& value,
                                const std::string& current_relation,
@@ -192,12 +156,13 @@ bool IlliniBook::FindVRelation(const std::vector<int>& vec,
   return false;
 }
 
+// works
 bool IlliniBook::AreRelated(int uin_1, int uin_2) const {
   int result = Solve(uin_1, uin_2);
   return result != -1;
 }
 
-// does not wrok...
+// does not work...
 // bool IlliniBook::AreRelated(int uin_1,
 //                             int uin_2,
 //                             const std::string& relationship) const {
@@ -205,14 +170,27 @@ bool IlliniBook::AreRelated(int uin_1, int uin_2) const {
 //   return result != -1;
 // }
 
+// works
 int IlliniBook::GetRelated(int uin_1, int uin_2) const {
   return Solve(uin_1, uin_2);
 }
-// int IlliniBook::GetRelated(
-//     int uin_1, int uin_2, const std::string& relationship) const {}
 
-std::vector<int> IlliniBook::GetSteps(int uin, int n) const {}
+// does not work
+// int IlliniBook::GetRelated(int uin_1,
+//                            int uin_2,
+//                            const std::string& relationship) const {
+//   return SolveRelation(uin_1, uin_2, relationship);
+// }
 
+// to be implemented
+// std::vector<int> IlliniBook::GetSteps(int uin, int n) const {
+//   std::vector<int> blabla = {};
+//   blabla.push_back(uin);
+//   blabla.push_back(n);
+//   return blabla;
+// }
+
+// helper fucntion for count group
 size_t IlliniBook::CountGroupsHelp() {
   std::set<int> visited_node;
   int count = 0;
@@ -226,7 +204,7 @@ size_t IlliniBook::CountGroupsHelp() {
   return count;
 }
 
-// helper for countgroups
+// helper for countgrouphelps
 void IlliniBook::DFS(const int& node, std::set<int>& visited_node) {
   visited_node.insert(node);
 
@@ -244,11 +222,17 @@ void IlliniBook::DFS(const int& node, std::set<int>& visited_node) {
 }
 
 // cannot call nonconstant function under const function !!!!!
-// size_t IlliniBook::CountGroups() const {
-//   return const_cast<const IlliniBook*>(this) CountGroupsHelp();
+size_t IlliniBook::CountGroups() const { return 0; }
+
+// to be implemented
+// size_t IlliniBook::CountGroups(const std::string& relationship) const {
+//   int i = relationship.length();
+//   return i;
 // }
 
-// size_t IlliniBook::CountGroups(const std::string& relationship) const {}
-// size_t IlliniBook::CountGroups(const std::vector<std::string>&
-// relationships)
-//     const {}
+// to be implemented
+// size_t IlliniBook::CountGroups(
+//     const std::vector<std::string>& relationships) const {
+//   int i = relationships.size();
+//   return i;
+// }
