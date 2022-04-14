@@ -38,10 +38,12 @@ public:
   void DisplayGraph();
 
   void DFS(const int& node, std::set<int>& visited_node);
+  // void DFS(const int& node) const;
   size_t CountGroupsHelp();
 
 private:
   std::map<int, std::map<int, std::string>> graph_;
+  std::set<int> visited_node_;
 };
 
 #endif

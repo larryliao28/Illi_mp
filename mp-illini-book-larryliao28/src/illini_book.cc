@@ -68,7 +68,7 @@ void IlliniBook::DisplayGraph() {
   }
 }
 
-// helper for getRelated and are related, passing the test
+// helper for getRelated and arerelated, passing the test
 int IlliniBook::Solve(const int& uin_1, const int& uin_2) const {
   std::queue<int> queue;
   std::vector<int> visited_nodes;
@@ -118,14 +118,20 @@ int IlliniBook::SolveRelation(const int& uin_1,
     queue.pop();
     std::map<int, std::string> adj = graph_.find(current)->second;
     for (auto& neighbor : adj) {
-      if (!FindVRelation(
-              visited_nodes, neighbor.first, neighbor.second, relation)) {
+      if (neighbor.second != relation) {
+        visited_nodes.push_back(neighbor.first);
+      } else if (!FindVRelation(visited_nodes,
+                                neighbor.first,
+                                neighbor.second,
+                                relation)) {
         dist.find(neighbor.first)->second = dist.find(current)->second + 1;
         queue.push(neighbor.first);
         visited_nodes.push_back(neighbor.first);
       }
     }
-    if (current == uin_2) {
+    if (current == uin_2 &&
+        adj[uin_1] ==
+            relation) {  // maybe add && adj.find(current)->second == relation
       return dist.find(current)->second;
     }
   }
@@ -163,12 +169,12 @@ bool IlliniBook::AreRelated(int uin_1, int uin_2) const {
 }
 
 // does not work...
-// bool IlliniBook::AreRelated(int uin_1,
-//                             int uin_2,
-//                             const std::string& relationship) const {
-//   int result = SolveRelation(uin_1, uin_2, relationship);
-//   return result != -1;
-// }
+bool IlliniBook::AreRelated(int uin_1,
+                            int uin_2,
+                            const std::string& relationship) const {
+  int result = SolveRelation(uin_1, uin_2, relationship);
+  return result != -1;
+}
 
 // works
 int IlliniBook::GetRelated(int uin_1, int uin_2) const {
@@ -182,14 +188,40 @@ int IlliniBook::GetRelated(int uin_1, int uin_2) const {
 //   return SolveRelation(uin_1, uin_2, relationship);
 // }
 
-// to be implemented
-// std::vector<int> IlliniBook::GetSteps(int uin, int n) const {
-//   std::vector<int> blabla = {};
-//   blabla.push_back(uin);
-//   blabla.push_back(n);
-//   return blabla;
-// }
+// to be implemented, works in local test
+std::vector<int> IlliniBook::GetSteps(int uin, int n) const {
+  std::queue<int> queue;
+  std::vector<int> visited_nodes;
+  std::map<int, int> dist;
 
+  for (const auto& init : graph_) {
+    dist.insert(std::pair<int, int>(init.first, 0));
+  }
+
+  queue.push(uin);
+  visited_nodes.push_back(uin);
+  while (!queue.empty()) {
+    int current = queue.front();
+    queue.pop();
+    std::map<int, std::string> adj = graph_.find(current)->second;
+    for (auto& neighbor : adj) {
+      if (!FindV(visited_nodes, neighbor.first)) {
+        dist.find(neighbor.first)->second = dist.find(current)->second + 1;
+        queue.push(neighbor.first);
+        visited_nodes.push_back(neighbor.first);
+      }
+    }
+  }
+
+  std::vector<int> result = {};
+
+  for (const auto& node : dist) {
+    if (node.second == n) {
+      result.push_back(node.first);
+    }
+  }
+  return result;
+}
 // helper fucntion for count group
 size_t IlliniBook::CountGroupsHelp() {
   std::set<int> visited_node;
@@ -200,7 +232,6 @@ size_t IlliniBook::CountGroupsHelp() {
       DFS(i.first, visited_node);
     }
   }
-  // connected_ = count;
   return count;
 }
 
@@ -222,12 +253,13 @@ void IlliniBook::DFS(const int& node, std::set<int>& visited_node) {
 }
 
 // cannot call nonconstant function under const function !!!!!
-size_t IlliniBook::CountGroups() const { return 0; }
+// size_t IlliniBook::CountGroups() const { return CountGroupsHelp(); }
 
 // to be implemented
 // size_t IlliniBook::CountGroups(const std::string& relationship) const {
 //   int i = relationship.length();
 //   return i;
+
 // }
 
 // to be implemented
@@ -236,3 +268,5 @@ size_t IlliniBook::CountGroups() const { return 0; }
 //   int i = relationships.size();
 //   return i;
 // }
+
+// way sto do countgroups with relationship:
